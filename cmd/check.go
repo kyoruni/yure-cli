@@ -5,11 +5,17 @@ package cmd
 
 import (
 	_ "embed"
+	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 )
+
+type Term struct {
+	Correct string `json:"correct"`
+	Wrong   string `json:"wrong"`
+}
 
 //go:embed dict.json
 var defaultDict []byte
@@ -26,25 +32,16 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("check called")
-
-		var dictData []byte
-		var err error
-
-		if dictFile != "" {
-			dictData, err = os.ReadFile(dictFile)
-			if err != nil {
-				fmt.Println("辞書ファイルの読み込みに失敗しました:", err)
-				return
-			}
-			fmt.Println("辞書ファイルを読み込みました")
-		} else {
-			dictData = defaultDict
-			fmt.Println("デフォルトの辞書ファイルを使用します")
+		terms, err := loadDict(dictFile, defaultDict)
+		if err != nil {
+			fmt.Println("辞書ファイルの読み込みに失敗しました:", err)
+			return
 		}
 
 		fmt.Println("辞書ファイルの中身:")
-		fmt.Println(string(dictData))
+		for _, t := range terms {
+			fmt.Printf(" NG %s => OK %s\n", t.Wrong, t.Correct)
+		}
 	},
 }
 
@@ -52,4 +49,26 @@ func init() {
 	rootCmd.AddCommand(checkCmd)
 
 	checkCmd.Flags().StringVarP(&dictFile, "dict", "d", "", "辞書ファイル(JSON)のパス")
+}
+
+func loadDict(dictFile string, embedded []byte) ([]Term, error) {
+	var dictData []byte
+	var err error
+
+	if dictFile != "" {
+		dictData, err = os.ReadFile(dictFile)
+		if err != nil {
+			return nil, fmt.Errorf("辞書ファイルの読み込みに失敗しました: %w", err)
+		}
+	} else {
+		dictData = embedded
+	}
+
+	var terms []Term
+	err = json.Unmarshal(dictData, &terms)
+	if err != nil {
+		return nil, fmt.Errorf("辞書ファイルの展開に失敗しました: %w", err)
+	}
+
+	return terms, nil
 }
