@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/kyoruni/yure-cli/embeddata"
 	"github.com/spf13/cobra"
 )
 
@@ -17,9 +18,9 @@ var replaceInputFile string
 // replaceCmd represents the replace command
 var replaceCmd = &cobra.Command{
 	Use:   "replace",
-	Short: "表記揺れを修正して上書き保存します",
+	Short: "表記ゆれを修正して上書き保存します",
 	Run: func(cmd *cobra.Command, args []string) {
-		terms, err := loadDict(replaceDictFile, defaultDict)
+		terms, err := loadDict(replaceDictFile, embeddata.GetDefaultDict())
 		if err != nil {
 			fmt.Println("辞書ファイルの読み込みに失敗しました:", err)
 			return

@@ -8,20 +8,19 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kyoruni/yure-cli/embeddata"
 	"github.com/spf13/cobra"
 )
 
-//go:embed dict.json
-var defaultDict []byte
 var dictFile string
 var inputFile string
 
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
 	Use:   "check",
-	Short: "表記揺れに該当する箇所を探します",
+	Short: "表記ゆれに該当する箇所を探します",
 	Run: func(cmd *cobra.Command, args []string) {
-		terms, err := loadDict(dictFile, defaultDict)
+		terms, err := loadDict(dictFile, embeddata.GetDefaultDict())
 		if err != nil {
 			fmt.Println("辞書ファイルの読み込みに失敗しました:", err)
 			return
