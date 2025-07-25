@@ -60,14 +60,7 @@ to quickly create a Cobra application.`,
 		fmt.Println(string(content))
 
 		lines := strings.Split(string(content), "\n")
-		for i, line := range lines {
-			for _, term := range terms {
-				if strings.Contains(line, term.Wrong) {
-					fmt.Printf("%s:%d: %s\n", inputFile, i+1, line)
-					break
-				}
-			}
-		}
+		findWrongTerms(lines, terms, inputFile)
 	},
 }
 
@@ -106,4 +99,15 @@ func loadInputFile(path string) ([]byte, error) {
 		return nil, fmt.Errorf("入力ファイルの読み込みに失敗しました: %w", err)
 	}
 	return data, nil
+}
+
+func findWrongTerms(lines []string, terms []Term, fileName string) {
+	for i, line := range lines {
+		for _, term := range terms {
+			if strings.Contains(line, term.Wrong) {
+				fmt.Printf("%s:%d: %s\n", fileName, i+1, line)
+				break
+			}
+		}
+	}
 }
