@@ -40,11 +40,6 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		fmt.Println("辞書ファイルの中身:")
-		for _, t := range terms {
-			fmt.Printf(" NG %s => OK %s\n", t.Wrong, t.Correct)
-		}
-
 		if inputFile == "" {
 			fmt.Println("入力ファイルが指定されていません")
 			return
@@ -55,9 +50,6 @@ to quickly create a Cobra application.`,
 			fmt.Println(err)
 			return
 		}
-
-		fmt.Println("\n---入力ファイルの内容---")
-		fmt.Println(string(content))
 
 		lines := strings.Split(string(content), "\n")
 		findWrongTerms(lines, terms, inputFile)
