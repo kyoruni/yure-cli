@@ -45,14 +45,3 @@ func loadInputFile(path string) ([]string, error) {
 	lines := strings.Split(string(data), "\n")
 	return lines, nil
 }
-
-func findWrongTerms(lines []string, terms []Term, fileName string) {
-	for i, line := range lines {
-		for _, term := range terms {
-			if strings.Contains(line, term.Wrong) {
-				fmt.Printf("%s:%d: %s\n", fileName, i+1, line)
-				break
-			}
-		}
-	}
-}

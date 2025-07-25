@@ -6,6 +6,7 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -45,6 +46,17 @@ to quickly create a Cobra application.`,
 
 		findWrongTerms(content, terms, inputFile)
 	},
+}
+
+func findWrongTerms(lines []string, terms []Term, fileName string) {
+	for i, line := range lines {
+		for _, term := range terms {
+			if strings.Contains(line, term.Wrong) {
+				fmt.Printf("%s:%d: %s\n", fileName, i+1, line)
+				break
+			}
+		}
+	}
 }
 
 func init() {
