@@ -20,6 +20,7 @@ type Term struct {
 //go:embed dict.json
 var defaultDict []byte
 var dictFile string
+var inputFile string
 
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
@@ -42,6 +43,20 @@ to quickly create a Cobra application.`,
 		for _, t := range terms {
 			fmt.Printf(" NG %s => OK %s\n", t.Wrong, t.Correct)
 		}
+
+		if inputFile == "" {
+			fmt.Println("入力ファイルが指定されていません")
+			return
+		}
+
+		content, err := os.ReadFile(inputFile)
+		if err != nil {
+			fmt.Println("入力ファイルの読み込みに失敗しました:", err)
+			return
+		}
+
+		fmt.Println("\n---入力ファイルの内容---")
+		fmt.Println(string(content))
 	},
 }
 
@@ -49,6 +64,7 @@ func init() {
 	rootCmd.AddCommand(checkCmd)
 
 	checkCmd.Flags().StringVarP(&dictFile, "dict", "d", "", "辞書ファイル(JSON)のパス")
+	checkCmd.Flags().StringVarP(&inputFile, "input", "i", "", "チェック対象のテキストファイル")
 }
 
 func loadDict(dictFile string, embedded []byte) ([]Term, error) {
