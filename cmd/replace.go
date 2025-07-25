@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -17,7 +19,7 @@ var replaceCmd = &cobra.Command{
 	Use:   "replace",
 	Short: "表記揺れを修正して上書き保存します",
 	Run: func(cmd *cobra.Command, args []string) {
-		_, err := loadDict(replaceDictFile, defaultDict)
+		terms, err := loadDict(replaceDictFile, defaultDict)
 		if err != nil {
 			fmt.Println("辞書ファイルの読み込みに失敗しました:", err)
 			return
@@ -34,11 +36,29 @@ var replaceCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("入力ファイルの内容:")
-		for i, line := range content {
-			fmt.Printf("%2d: %s\n", i+1, line)
+		replaced := replaceTerms(content, terms)
+
+		output := strings.Join(replaced, "\n")
+		err = os.WriteFile(replaceInputFile, []byte(output), 0644)
+		if err != nil {
+			fmt.Println("ファイルの上書き保存に失敗しました:", err)
+			return
 		}
+
+		fmt.Printf("置換した内容を %s に保存しました\n", replaceInputFile)
 	},
+}
+
+func replaceTerms(lines []string, terms []Term) []string {
+	var replaced []string
+	for _, line := range lines {
+		newLine := line
+		for _, term := range terms {
+			newLine = strings.ReplaceAll(newLine, term.Wrong, term.Correct)
+		}
+		replaced = append(replaced, newLine)
+	}
+	return replaced
 }
 
 func init() {
