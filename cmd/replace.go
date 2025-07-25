@@ -9,31 +9,41 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var replaceDictFile string
+var replaceInputFile string
+
 // replaceCmd represents the replace command
 var replaceCmd = &cobra.Command{
 	Use:   "replace",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "表記揺れを修正して上書き保存します",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("replace called")
+		_, err := loadDict(replaceDictFile, defaultDict)
+		if err != nil {
+			fmt.Println("辞書ファイルの読み込みに失敗しました:", err)
+			return
+		}
+
+		if replaceInputFile == "" {
+			fmt.Println("入力ファイルが指定されていません")
+			return
+		}
+
+		content, err := loadInputFile(replaceInputFile)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println("入力ファイルの内容:")
+		for i, line := range content {
+			fmt.Printf("%2d: %s\n", i+1, line)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(replaceCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// replaceCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// replaceCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	replaceCmd.Flags().StringVarP(&replaceDictFile, "dict", "d", "", "辞書ファイル(JSON)のパス")
+	replaceCmd.Flags().StringVarP(&replaceInputFile, "input", "i", "", "チェック対象のテキストファイル")
 }

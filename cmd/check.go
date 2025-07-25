@@ -6,7 +6,6 @@ package cmd
 import (
 	_ "embed"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -44,8 +43,7 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		lines := strings.Split(string(content), "\n")
-		findWrongTerms(lines, terms, inputFile)
+		findWrongTerms(content, terms, inputFile)
 	},
 }
 
