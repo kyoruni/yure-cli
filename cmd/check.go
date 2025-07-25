@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -57,6 +58,16 @@ to quickly create a Cobra application.`,
 
 		fmt.Println("\n---入力ファイルの内容---")
 		fmt.Println(string(content))
+
+		lines := strings.Split(string(content), "\n")
+		for i, line := range lines {
+			for _, term := range terms {
+				if strings.Contains(line, term.Wrong) {
+					fmt.Printf("%s:%d: %s\n", inputFile, i+1, line)
+					break
+				}
+			}
+		}
 	},
 }
 
