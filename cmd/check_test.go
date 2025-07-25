@@ -51,3 +51,24 @@ func TestLoadDictFromFile(t *testing.T) {
 		t.Errorf("読み込み内容が期待と違います: %+v", terms)
 	}
 }
+
+// 入力ファイルから読み込み
+func TestLoadInputFile(t *testing.T) {
+	content := "これはテストファイルです\n2行目です\n"
+	tmpFile := "test_input.txt"
+
+	err := os.WriteFile(tmpFile, []byte(content), 0644)
+	if err != nil {
+		t.Fatal("テスト用ファイルの作成に失敗", err)
+	}
+	defer os.Remove(tmpFile) // 終わったら削除
+
+	data, err := loadInputFile(tmpFile)
+	if err != nil {
+		t.Fatalf("ファイルからの読み込みに失敗: %v", err)
+	}
+
+	if string(data) != content {
+		t.Errorf("読み込み結果が期待と違います\n期待: %q\n実際: %q", content, string(data))
+	}
+}

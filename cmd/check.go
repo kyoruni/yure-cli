@@ -50,9 +50,9 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		content, err := os.ReadFile(inputFile)
+		content, err := loadInputFile(inputFile)
 		if err != nil {
-			fmt.Println("入力ファイルの読み込みに失敗しました:", err)
+			fmt.Println(err)
 			return
 		}
 
@@ -98,4 +98,12 @@ func loadDict(dictFile string, embedded []byte) ([]Term, error) {
 	}
 
 	return terms, nil
+}
+
+func loadInputFile(path string) ([]byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("入力ファイルの読み込みに失敗しました: %w", err)
+	}
+	return data, nil
 }
